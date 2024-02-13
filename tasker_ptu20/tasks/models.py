@@ -8,8 +8,8 @@ class Project(models.Model):
     name = models.CharField(_("name"), max_length=100, db_index=True)
     owner = models.ForeignKey(
         get_user_model(), 
-        on_delete=models.CASCADE, 
         verbose_name=_("owner"), 
+        on_delete=models.CASCADE,
         related_name='projects',
     )
 
@@ -30,15 +30,15 @@ class Task(models.Model):
     description = models.TextField(_("description"), blank=True, max_length=10000)
     project = models.ForeignKey(
         Project,
-        on_delete=models.CASCADE, 
         verbose_name=_("project"), 
+        on_delete=models.CASCADE,
         related_name='tasks',
     )
     owner = models.ForeignKey(
         get_user_model(), 
-        on_delete=models.CASCADE, 
         verbose_name=_("owner"), 
-        related_name='tasks',
+        on_delete=models.CASCADE,
+        related_name='tasks'
     )
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(_("updated at"), auto_now=True, db_index=True)
