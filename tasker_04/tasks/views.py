@@ -1,6 +1,7 @@
 from typing import Any
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse
@@ -8,7 +9,7 @@ from django.views import generic
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from . import models
+from . import models, forms
 
 def index(request: HttpRequest) -> HttpResponse:
     context = {
@@ -19,9 +20,24 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'tasks/index.html', context)
 
 def task_list(request: HttpRequest) -> HttpResponse:
-    return render(request, 'tasks/task_list.html', {
-        'task_list': models.Task.objects.all()
-    })
+    queryset = models.Task.objects
+    project_pk = request.GET.get('project_pk')
+    if project_pk:
+        project = get_object_or_404(models.Project, pk=project_pk)
+        queryset = queryset.filter(project=project)
+    owner_username = request.GET.get('owner')
+    if owner_username:
+        owner = get_object_or_404(get_user_model(), username=owner_username)
+        queryset = queryset.filter(owner=owner)
+    search_name = request.GET.get('search_name')
+    if search_name:
+        queryset = queryset.filter(name__icontains=search_name)
+    context = {
+        'task_list': queryset.all(),
+        'project_list': models.Project.objects.all(),
+        'user_list': get_user_model().objects.all().order_by('username'),
+    }
+    return render(request, 'tasks/task_list.html', context)
 
 def task_detail(request: HttpRequest, pk:int) -> HttpResponse:
     return render(request, 'tasks/task_detail.html', {
@@ -34,6 +50,20 @@ def task_done(request: HttpRequest, pk:int) -> HttpResponse:
     task.save()
     messages.success(request, f"{_('task').capitalize()} #{task.pk} {_('marked as')} {_('done') if task.is_done else _('undone')}.")
     return redirect(task_list)
+
+@login_required
+def task_create(request: HttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        form = forms.TaskForm(request.POST)
+        if form.is_valid():
+            form.instance.owner = request.user
+            form.save()
+            messages.success(request, _("task created successfully").capitalize())
+            return redirect('task_list')
+    else:
+        form = forms.TaskForm()
+    form.fields['project'].queryset = form.fields['project'].queryset.filter(owner=request.user)
+    return render(request, 'tasks/task_create.html', {'form': form})
 
 
 class ProjectListView(generic.ListView):
@@ -50,6 +80,7 @@ class ProjectListView(generic.ListView):
         context = super().get_context_data(**kwargs)
         context['user_list'] = get_user_model().objects.all().order_by('username')
         return context
+
 
 class ProjectDetailView(generic.DetailView):
     model = models.Project
@@ -69,6 +100,7 @@ class ProjectCreateView(LoginRequiredMixin, generic.CreateView):
         form.instance.owner = self.request.user
         return super().form_valid(form)
 
+
 class ProjectUpdateView(
         LoginRequiredMixin, 
         UserPassesTestMixin, 
@@ -79,11 +111,12 @@ class ProjectUpdateView(
     fields = ('name', )
 
     def get_success_url(self) -> str:
-        messages.success(self.request, _('project created successfully').capitalize())
+        messages.success(self.request, _('project updated successfully').capitalize())
         return reverse('project_list')
 
     def test_func(self) -> bool | None:
         return self.get_object().owner == self.request.user
+
 
 class ProjectDeleteView(
         LoginRequiredMixin, 
