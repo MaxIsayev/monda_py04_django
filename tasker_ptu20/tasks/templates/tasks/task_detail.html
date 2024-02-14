@@ -3,13 +3,13 @@
 {% block content %}
 <h1><a href="{% url "task_done" task.pk %}?next={{ request.path }}">
     {% if task.is_done %}&#x2611;{% else %}&#x2610;{% endif %}</a>
-    {{ task.name }}</h1>
-<p>{{ task.owner }} / {{ task.project }}</p>
+    {{ task.name }}
+</h1>
+<p>Owner: {{ task.owner }} / Project: {{ task.project }}</p>
 <p>Deadline: {{ task.deadline }}</p>
 <p>{{ task.description }}</p>
-<p>Created: {{ task.created_at }}, 
-    {% if task.created_at != task.updated_at %}
-        updated: {{ task.updated_at }}
-    {% endif %}
+<p>Created: {{ task.created_at }}{% if task.created_at != task.updated_at %},
+    updated: {{ task.updated_at }}
+{% endif %}
 </p>
 {% endblock content %}
