@@ -3,7 +3,7 @@ from . import models
 from django.utils.translation import gettext_lazy as _
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'total_pages', 'recent_pages', 'owner']
+    list_display = ['id', 'name', 'total_pages', 'unpublished_pages', 'recent_pages', 'owner']
     list_filter = ['owner']
     list_display_links = ['name']
 
@@ -15,16 +15,20 @@ class CategoryAdmin(admin.ModelAdmin):
         return "; ".join(obj.pages.order_by('-created_at').values_list('name', flat=True)[:3])
     recent_pages.short_description = _('recent pages')
 
+    def unpublished_pages(self, obj: models.Category):
+        return obj.pages.filter(is_published=False).count()
+    unpublished_pages.short_description = _('unpublished pages')
+
 class PageAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'owner', 'created_at']
+    list_display = ['name', 'is_published', 'category', 'owner', 'created_at']
     list_filter = ['created_at']
     search_fields = ['name', 'description', 'page__name', 'owner__last_name', 'owner__username']
     readonly_fields = ['id', 'created_at', 'updated_at']
+    list_editable = ['is_published']
     fieldsets = (
         (_("general").title(), {
             "fields": (
-                ('name'),
-                'description',
+                'name', 'description', 'is_published',
             ),
         }),
         (_("ownership").title(), {

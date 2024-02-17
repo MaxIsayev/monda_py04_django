@@ -42,6 +42,7 @@ class Page(models.Model):
     )
     created_at = models.DateTimeField(_("created at"), auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(_("updated at"), auto_now=True, db_index=True)
+    is_published = models.BooleanField(_("is published"), default=False, db_index=True)
     
     def __str__(self):
         return self.name

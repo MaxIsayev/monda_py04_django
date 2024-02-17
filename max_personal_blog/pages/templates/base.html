@@ -1,11 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}{% get_available_languages as LANGUAGES %}
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Max_Blog{% endblock title %}</title>
+    <title>{% block title %}Max Blog{% endblock title %}</title> 
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">   
 </head>
 <body>
+    <header>
+        <span class="logo">Max Blog</span>
+        <ul class="nav">
+            <li><a href="{% url 'index' %}">{% trans "dashboard"|capfirst %}</a></li>
+            <li><a href="{% url 'page_list' %}">{% trans "pages"|capfirst %}</a></li>
+        </ul>        
+    </form>
+    </header>
+    <section class="messages">
+        {% for message in messages %}
+            <p class="message message-{{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    </section>
     <main>{% block content %}{% endblock content %}</main>
+    <footer>
+        {% block footer %}{% endblock footer %}        
+        <p>&copy; 2023-2024 PTU20 <a style="float:right;" href="http://gka.lt" target="_blank">Gero Kodo Akademija</a></p>   
+        <span class="spacer"></span>
+        <form action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ redirect_to }}">
+        <select class="language" name="language" onchange="this.form.submit();">
+            {% for lang in LANGUAGES %}
+                <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                    {{ lang.1 }}
+                </option>
+            {% endfor %}
+        </select>     
+    </footer>
 </body>
 </html>

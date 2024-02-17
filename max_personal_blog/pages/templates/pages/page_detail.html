@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ block.super }} | {{ page }}{% endblock title %}
+{% block content %}
+<h1><a href="{% url "page_published" page.pk %}?next={{ request.path }}">
+    {% if page.is_published %}&#x2611;{% else %}&#x2610;{% endif %}
+    {{ page.name }}</h1>
+<p>{{ page.owner }} / {{ page.category }}</p>
+<p>{{ page.description }}</p>
+<p>{% trans "created"|capfirst %}: {{ page.created_at }}, 
+    {% if page.created_at != page.updated_at %}
+    {% trans "updated"|capfirst %}: {{ page.updated_at }}
+    {% endif %}
+</p>
+{% endblock content %}

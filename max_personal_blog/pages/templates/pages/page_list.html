@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{{ block.super }} list{% endblock title %}
+{% block content %}
+<h1>{% trans "pages"|capfirst %}</h1>
+<ul>
+    <li class="list-table-header">
+        <span>{% trans "name"|capfirst %}</span>        
+    </li>
+{% for page in page_list %}
+<li><a href="{% url "page_published" page.pk %}">
+    {% if page.is_published %}&#x2611;{% else %}&#x2610;{% endif %}</a>      
+    <a href="{% url "page_detail" page.pk %}">{{ page.name }}</a>    
+</li>
+{% endfor %}
+</ul>
+{% endblock content %}
