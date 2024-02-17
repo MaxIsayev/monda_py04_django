@@ -1,16 +1,12 @@
 # Functional permissioned CRUD Views
 
-We have created most important CRUD based workflow for a permissioned object Project last time. Now we will improve our Task views with similar functionality but keep them function based. Later you will have an option to refactor all of them to class based views.
+We have created most important CRUD based workflow for a permissioned object Project last time. Now we will improve our Task views with similar functionality but keep them function based. Later you will have an option to refactor all of them to class based views if you wish so.
 
 ## Objectives
 
 Update these views:
 * `task_list` to get filters by user and project, and search function
 * create `task_create` for logged in user
-* create `task_update` and `task_delete` for task owner
-* add a link to project and owner's management controls to `taks_detail`
-* fix `task_done` permissions to limit task and related project owners to be able to mark task done
-* `index` to get more statistical metrics and re-style the dashboard
 
 ## Filters for the Task List view
 
@@ -19,26 +15,33 @@ Let's begin with something simple - adding a few filters and a search by name qu
 ```Python
 def task_list(request: HttpRequest) -> HttpResponse:
     queryset = models.Task.objects
-    project_pk = request.GET.get('project_pk')
-    if project_pk:
-        project = get_object_or_404(models.Project, pk=project_pk)
-        queryset = queryset.filter(project=project)
     owner_username = request.GET.get('owner')
     if owner_username:
         owner = get_object_or_404(get_user_model(), username=owner_username)
         queryset = queryset.filter(owner=owner)
+        projects = models.Project.objects.filter(owner=owner)
+    elif request.user.is_authenticated:
+        projects = models.Project.objects.filter(owner=request.user)
+    else:
+        projects = models.Project.objects
+    project_pk = request.GET.get('project_pk')
+    if project_pk:
+        project = get_object_or_404(models.Project, pk=project_pk)
+        queryset = queryset.filter(project=project)
     search_name = request.GET.get('search_name')
     if search_name:
         queryset = queryset.filter(name__icontains=search_name)
     context = {
         'task_list': queryset.all(),
-        'project_list': models.Project.objects.all(),
+        'project_list': projects.all(),
         'user_list': get_user_model().objects.all().order_by('username'),
     }
     return render(request, 'tasks/task_list.html', context)
 ```
 
 The query process is quite simple: we just collect model query parameter from `request.GET`, then verify if object related to that parameter exists, and update the queryset or throw out 404 page depending on the result. Then we pack the projects and user lists, together with the resulting task list from the queryset, into the `context` which we pass to the returning `render` function.
+
+Note that if we filter by user, we also filter project's filter by the same user as well, and otherwise leave the projects by current user.
 
 Now let's fix up the template and add the toolbar with filter controls and search box:
 
@@ -160,3 +163,10 @@ def task_create(request: HttpRequest) -> HttpResponse:
 
 And it would be very nice to have a date picker. We can fix that by overriding `DateTime` widget in [forms.py](../tasker_04/tasks/forms.py) and using it in the form.
 
+## Conclusions
+
+Function based views have quite much redundant boilerplate code, however, are a bit more flexible in how things are done, easier to customize. However, such function based views can grow out into spaghetti code very easily.
+
+## Assignment
+
+Implement user permissioned Create/List/Detail workflow for one or more models as function based views in your Blog project. Experiment with GET parameters for filters and search.
