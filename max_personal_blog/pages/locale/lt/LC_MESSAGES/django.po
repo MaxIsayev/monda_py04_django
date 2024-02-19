@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-17 21:46+0200\n"
+"POT-Creation-Date: 2024-02-19 22:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,6 +89,22 @@ msgstr "puslapis"
 #: pages/views.py:40
 msgid "dashboard"
 msgstr "puslapių skydelis"
+
+#: pages/templates/base.html:23
+msgid "admin"
+msgstr "adminas"
+
+#: pages/templates/base.html:25
+msgid "log out"
+msgstr "išeiti"
+
+#: pages/templates/base.html:27
+msgid "log in"
+msgstr "prisijungti"
+
+#: pages/templates/base.html:28
+msgid "sign up"
+msgstr "užsiregistruoti"
 
 #: pages/templates/pages/index.html:5
 msgid "users"

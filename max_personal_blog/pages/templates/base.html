@@ -15,7 +15,19 @@
             <li><a href="{% url 'index' %}">{% trans "dashboard"|capfirst %}</a></li>
             <li><a href="{% url 'page_list' %}">{% trans "pages"|capfirst %}</a></li>
         </ul>        
-    </form>
+        <span class="spacer"></span>
+        <ul class="nav nav-user">
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'user_detail_current' %}">{{ user }}</a></li>
+            {% if user.is_superuser or user.is_staff %}
+                <li><a href="{% url 'admin:index' %}">{% trans "admin"|capfirst %}</a></li>
+        {% endif %}
+            <li><form method="post" action="{% url "logout" %}">{% csrf_token %}<button type="submit">{% trans "log out"|capfirst %}</button></form></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">{% trans "log in"|capfirst %}</a></li>
+            <li><a href="{% url 'signup' %}">{% trans "sign up"|capfirst %}</a></li>
+        {% endif %}
+        </ul>
     </header>
     <section class="messages">
         {% for message in messages %}
@@ -36,7 +48,8 @@
                     {{ lang.1 }}
                 </option>
             {% endfor %}
-        </select>     
+        </select> 
+        </form>    
     </footer>
 </body>
 </html>
