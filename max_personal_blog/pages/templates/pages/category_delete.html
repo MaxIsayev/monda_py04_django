@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% load i18n %}
+{% block title %}{% trans "deleting"|capfirst %} {{ category.name }} | {{ block.super }}{% endblock title %}
+{% block content %}
+<h1>{% trans "deleting category"|capfirst %} {{ category.name }}</h1>
+<form method="post" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p>
+        {% trans "are you sure you want to delete category" %}
+        {{ category.name }}? 
+        {% trans "all category's"|capfirst %} {{ category.pages.count }}
+        {% trans "pages will be deleted" %}.
+    </p>
+    <p>
+        <button type="submit">{% trans "confirm"|capfirst %}</button>
+        <a class="button" href="{% url "category_detail" category.pk %}">{% trans "change mind"|capfirst %}</a>
+    </p>
+</form>
+{% endblock content %}

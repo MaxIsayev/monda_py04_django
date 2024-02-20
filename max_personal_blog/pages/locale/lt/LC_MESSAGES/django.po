@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-19 22:46+0200\n"
+"POT-Creation-Date: 2024-02-20 21:44+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,7 +44,7 @@ msgstr "nuosavybė"
 msgid "temporal tracking"
 msgstr "laikinas sekimas"
 
-#: pages/apps.py:9 pages/models.py:52 pages/templates/base.html:16
+#: pages/apps.py:9 pages/models.py:52 pages/templates/base.html:17
 #: pages/templates/pages/index.html:7 pages/templates/pages/page_list.html:5
 msgid "pages"
 msgstr "puslapiai"
@@ -54,6 +54,7 @@ msgid "name"
 msgstr "pavadinimas"
 
 #: pages/models.py:12 pages/models.py:40
+#: pages/templates/pages/category_detail.html:10
 msgid "owner"
 msgstr "savininkas"
 
@@ -61,7 +62,10 @@ msgstr "savininkas"
 msgid "category"
 msgstr "kategorija"
 
-#: pages/models.py:21 pages/templates/pages/index.html:6
+#: pages/models.py:21 pages/templates/base.html:16
+#: pages/templates/pages/category_list.html:2
+#: pages/templates/pages/category_list.html:4
+#: pages/templates/pages/index.html:6
 msgid "categories"
 msgstr "kategorijos"
 
@@ -81,30 +85,119 @@ msgstr "atnaujintas"
 msgid "is published"
 msgstr "publikuotas"
 
-#: pages/models.py:51 pages/views.py:31
+#: pages/models.py:51 pages/views.py:37
 msgid "page"
 msgstr "puslapis"
 
 #: pages/templates/base.html:15 pages/templates/pages/index.html:4
-#: pages/views.py:40
+#: pages/views.py:46
 msgid "dashboard"
 msgstr "puslapių skydelis"
 
-#: pages/templates/base.html:23
+#: pages/templates/base.html:24
 msgid "admin"
 msgstr "adminas"
 
-#: pages/templates/base.html:25
+#: pages/templates/base.html:26
 msgid "log out"
 msgstr "išeiti"
 
-#: pages/templates/base.html:27
+#: pages/templates/base.html:28
 msgid "log in"
 msgstr "prisijungti"
 
-#: pages/templates/base.html:28
+#: pages/templates/base.html:29
 msgid "sign up"
 msgstr "užsiregistruoti"
+
+#: pages/templates/pages/category_create.html:2
+#, fuzzy
+#| msgid "created at"
+msgid "create a category at"
+msgstr "sukurtas"
+
+#: pages/templates/pages/category_create.html:4
+#, fuzzy
+#| msgid "created at"
+msgid "create a category"
+msgstr "sukurtas"
+
+#: pages/templates/pages/category_create.html:8
+#, fuzzy
+#| msgid "created"
+msgid "create"
+msgstr "sukurtas"
+
+#: pages/templates/pages/category_delete.html:2
+msgid "deleting"
+msgstr "šalinama"
+
+#: pages/templates/pages/category_delete.html:4
+#, fuzzy
+#| msgid "category"
+msgid "deleting category"
+msgstr "kategorija"
+
+#: pages/templates/pages/category_delete.html:9
+msgid "are you sure you want to delete category"
+msgstr "ar tikrai norite pašalinti kategoriją"
+
+#: pages/templates/pages/category_delete.html:11
+#, fuzzy
+#| msgid "category"
+msgid "all category's"
+msgstr "kategorija"
+
+#: pages/templates/pages/category_delete.html:12
+msgid "pages will be deleted"
+msgstr "puslapiai bus pašalinti"
+
+#: pages/templates/pages/category_delete.html:15
+#: pages/templates/pages/category_update.html:8
+msgid "confirm"
+msgstr "patvirtinti"
+
+#: pages/templates/pages/category_delete.html:16
+msgid "change mind"
+msgstr "persigalvoti"
+
+#: pages/templates/pages/category_detail.html:6
+msgid "edit"
+msgstr "redaguoti"
+
+#: pages/templates/pages/category_detail.html:7
+msgid "delete"
+msgstr "šalinti"
+
+#: pages/templates/pages/category_detail.html:11
+msgid "tasks"
+msgstr "puslapiai"
+
+#: pages/templates/pages/category_list.html:6
+#, fuzzy
+#| msgid "created"
+msgid "create new"
+msgstr "sukurtas"
+
+#: pages/templates/pages/category_list.html:9
+msgid "filter by owner"
+msgstr "filtruoti pagal savininką"
+
+#: pages/templates/pages/category_list.html:23
+#, fuzzy
+#| msgid "categories"
+msgid "no categories found"
+msgstr "kategorijos"
+
+#: pages/templates/pages/category_update.html:2
+msgid "editing"
+msgstr "redaguojamas"
+
+#: pages/templates/pages/category_update.html:4
+#, fuzzy
+#| msgid "category"
+msgid "editing category"
+msgstr "kategorija"
 
 #: pages/templates/pages/index.html:5
 msgid "users"
@@ -118,17 +211,29 @@ msgstr "sukurtas"
 msgid "updated"
 msgstr "atnaujintas"
 
-#: pages/views.py:33
+#: pages/views.py:39
 msgid "marked as"
 msgstr "pažymėtas kaip"
 
-#: pages/views.py:34
+#: pages/views.py:40
 msgid "published"
 msgstr "publikuotas"
 
-#: pages/views.py:34
+#: pages/views.py:40
 msgid "not published"
 msgstr "nepublikuotas"
+
+#: pages/views.py:74
+msgid "category created successfully"
+msgstr "kategorija sukurta sėkmingai"
+
+#: pages/views.py:91
+msgid "category updated successfully"
+msgstr "kategorija atnaujinta sėkmingai"
+
+#: pages/views.py:106
+msgid "category deleted successfully"
+msgstr "kategorija pašalinta sėkmingai"
 
 #, fuzzy
 #~| msgid "pages"
