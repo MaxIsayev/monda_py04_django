@@ -4,7 +4,14 @@
 {% block content %}
 <h1><a href="{% url "page_published" page.pk %}?next={{ request.path }}">
     {% if page.is_published %}&#x2611;{% else %}&#x2610;{% endif %}
-    {{ page.name }}</h1>
+    {{ page.name }}
+</h1>
+{% if page.owner == request.user %}
+    <p>
+        <a class="button" href="{% url "page_update" page.pk %}?next={{ request.GET.next|urlencode}}">{% trans "edit"|capfirst %}</a>
+        <a class="button" href="{% url "page_delete" page.pk %}?next={{ request.GET.next|urlencode}}">{% trans "delete"|capfirst %}</a>
+    </p>
+{% endif %}
 <p>{{ page.owner }} / {{ page.category }}</p>
 <p>{{ page.description }}</p>
 <p>{% trans "created"|capfirst %}: {{ page.created_at }}, 

@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from . import models
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from . import models, forms
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views import generic
@@ -20,9 +22,28 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'pages/index.html', context)
 
 def page_list(request: HttpRequest) -> HttpResponse:
-    return render(request, 'pages/page_list.html', {
-        'page_list': models.Page.objects.all()
-    })
+    queryset = models.Page.objects
+    owner_username = request.GET.get('owner')
+    if owner_username:
+        owner = get_object_or_404(get_user_model(), username=owner_username)
+        queryset = queryset.filter(owner=owner)
+        categories = models.Category.objects.filter(owner=owner)
+    else:
+        categories = models.Category.objects.all()
+    category_pk = request.GET.get('category')
+    if category_pk:
+        category = get_object_or_404(models.Category, pk=category_pk)
+        queryset = queryset.filter(category=category) 
+    search_name = request.GET.get('search_name')
+    if search_name:
+        queryset = queryset.filter(name__icontains=search_name)
+    context = {
+        'page_list': queryset.all(),
+        'category_list': categories.all(),
+        'user_list': get_user_model().objects.all().order_by('username'),
+        'next': reverse('page_list') + '?' + '&'.join([f"{key}={value}" for key, value in request.GET.items()]),
+    }
+    return render(request, 'pages/page_list.html', context)
 
 def page_detail(request: HttpRequest, pk:int) -> HttpResponse:
     return render(request, 'pages/page_detail.html', {
@@ -31,14 +52,20 @@ def page_detail(request: HttpRequest, pk:int) -> HttpResponse:
 
 def page_published(request: HttpRequest, pk:int) -> HttpResponse:
     page = get_object_or_404(models.Page, pk=pk)
-    page.is_published = not page.is_published
-    page.save()    
-    messages.info(request, "{} {} {} {}".format(
-        _('page').capitalize(),
-        page.name,
-        _('marked as'),
-        _('published') if page.is_published else _('not published'),
-    ))
+    if request.user in [page.owner, page.category.owner]:
+        page.is_published = not page.is_published
+        page.save()    
+        messages.info(request, "{} {} {} {}".format(
+            _('page').capitalize(),
+            page.name,
+            _('marked as'),
+            _('published') if page.is_published else _('not published'),
+        ))
+    else:
+        messages.error(request, "{}: {}".format(
+            _("permission error").title(),
+            _("you must be the owner of either the page itself or it\'s category"),
+        ))
     if request.GET.get('next'):
         return redirect(request.GET.get('next'))
     return redirect(page_list)
@@ -109,4 +136,45 @@ class CategoryDeleteView(
     def test_func(self) -> bool | None:
         return self.get_object().owner == self.request.user or self.request.user.is_superuser
 
-    
+@login_required
+def page_create(request: HttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        form = forms.PageForm(request.POST)
+        if form.is_valid():
+            form.instance.owner = request.user
+            form.save()
+            messages.success(request, _("page created successfully").capitalize())
+            if request.GET.get('next'):
+                return redirect(request.GET.get('next'))
+            return redirect('page_list')
+    else:
+        form = forms.PageForm()  
+    form.fields['category'].queryset = form.fields['category'].queryset.filter(owner=request.user)
+    return render(request, 'pages/page_create.html', {'form': form})
+
+@login_required
+def page_update(request: HttpRequest, pk: int) -> HttpResponse:
+    page = get_object_or_404(models.Page, pk=pk, owner=request.user)
+    if request.method == "POST":
+        form = forms.PageForm(request.POST, instance=page)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("page edited successfully"))
+            if request.GET.get('next'):
+                return redirect(request.GET.get('next'))
+            return redirect('page_list')
+    else:
+        form = forms.PageForm(instance=page)
+    form.fields['category'].queryset = form.fields['category'].queryset.filter(owner=request.user)
+    return render(request, 'pages/page_update.html', {'form': form})
+
+@login_required
+def page_delete(request: HttpRequest, pk: int) -> HttpResponse:
+    page = get_object_or_404(models.Page, pk=pk, owner=request.user)
+    if request.method == "POST":
+        page.delete()
+        messages.success(request, _("page deleted successfully"))
+        if request.GET.get('next'):
+            return redirect(request.GET.get('next'))
+        return redirect('page_list')
+    return render(request, 'pages/page_delete.html', {'page': page, 'object': page})
