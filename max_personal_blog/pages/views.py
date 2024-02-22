@@ -11,13 +11,60 @@ from django.views import generic
 from django.urls import reverse
 from django.db.models.query import QuerySet
 from typing import Any
-
+from datetime import datetime
 # Create your views here.
 def index(request: HttpRequest) -> HttpResponse:
+    pages = models.Page.objects
+    unpublished_pages = pages.filter(is_published=False)
+    common_dashboard = [
+        (_('users').title(), get_user_model().objects.count()),
+        (
+            _('categories').title(), 
+            models.Category.objects.count(), 
+            reverse('category_list'),
+        ),
+        (
+            _('pages').title(), 
+            pages.count(), 
+            reverse('page_list'),
+        ),
+        (
+            _('unpublished pages').title(), 
+            unpublished_pages.count(),
+        ),       
+        (
+            _('published pages').title(), 
+            pages.filter(is_published=True).count(),
+        ),
+    ]
+    if request.user.is_authenticated:
+        user_pages = pages.filter(owner=request.user)
+        user_unpublished_pages = user_pages.filter(is_published=False)
+        user_dashboard = [
+            (
+                _('categories').title(), 
+                models.Category.objects.filter(owner=request.user).count(), 
+                reverse('category_list') + f"?owner={request.user.username}",
+            ),
+            (
+                _('pages').title(), 
+                user_pages.count(),
+                reverse('page_list') + f"?owner={request.user.username}",
+            ),
+            (
+                _('unpublished pages').title(), 
+                user_unpublished_pages.count(),
+            ),           
+        ]
+        unpublished_pages = user_unpublished_pages.all()[:5]
+    else:
+        user_dashboard = None
+        unpublished_pages = unpublished_pages.all()[:5]
+
     context = {
-        'categories_count': models.Category.objects.count(),
-        'pages_count': models.Page.objects.count(),
-        'users_count': models.get_user_model().objects.count(),
+        'common_dashboard': common_dashboard,
+        'user_dashboard': user_dashboard,
+        'unpublished_pages': unpublished_pages,
     }
     return render(request, 'pages/index.html', context)
 
