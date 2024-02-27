@@ -6,6 +6,13 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'total_pages', 'unpublished_pages', 'recent_pages', 'owner']
     list_filter = ['owner']
     list_display_links = ['name']
+    fieldsets = (
+        (None, {
+            "fields": (
+                'name', 'owner', 'description',
+            ),
+        }),
+    )
 
     def total_pages(self, obj: models.Category):
         return obj.pages.count()

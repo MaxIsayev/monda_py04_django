@@ -2,6 +2,11 @@
 {% block title %}{{ object }} {% trans "at" %} {{ block.super }}{% endblock title %}
 {% block content %}
 <h1>{%trans "user"|title %} {{ object.username }}</h1>
+<div>
+    {%if object.profile.picture %}
+        <img src="{{object.profile.picture.url}}" alt={%trans "profile picture"|title%} width="300">
+    {%endif%}
+</div>
 <p>{{ object.first_name }} {{ object.last_name }}</p>
 {% if object == request.user %}
     <p><a class="button" href="{% url "user_update" %}">{% trans "edit profile data" %}</a></p>

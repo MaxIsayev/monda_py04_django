@@ -13,7 +13,7 @@
     </p>
 {% endif %}
 <p>{{ page.owner }} / {{ page.category }}</p>
-<p>{{ page.description }}</p>
+<div class="user-content">{{ page.description|safe }}</div>
 <p>{% trans "created"|capfirst %}: {{ page.created_at }}, 
     {% if page.created_at != page.updated_at %}
     {% trans "updated"|capfirst %}: {{ page.updated_at }}

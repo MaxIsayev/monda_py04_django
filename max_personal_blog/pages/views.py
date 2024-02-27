@@ -142,7 +142,7 @@ class CategoryDetailView(generic.DetailView):
 class CategoryCreateView(LoginRequiredMixin, generic.CreateView):
     model = models.Category
     template_name = 'pages/category_create.html'
-    fields = ('name', )
+    fields = ('name', 'description', )
 
     def get_success_url(self) -> str:
         messages.success(self.request, _('category created successfully').capitalize())
@@ -159,7 +159,7 @@ class CategoryUpdateView(
     ):
     model = models.Category
     template_name = 'pages/category_update.html'
-    fields = ('name', )
+    fields = ('name', 'description', )
 
     def get_success_url(self) -> str:
         messages.success(self.request, _('category updated successfully').capitalize())

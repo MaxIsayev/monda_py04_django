@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from PIL import Image
-
+import os
 
 class Profile(models.Model):
     user = models.OneToOneField(get_user_model(), verbose_name=_("user"), on_delete=models.CASCADE)
@@ -22,7 +22,7 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs)
-        if self.picture:
+        if self.picture and os.path.exists(self.picture.path):
             image = Image.open(self.picture.path)
             if image.size[0] > 400 or image.size[1] > 300:
                 image.resize((400, 300))

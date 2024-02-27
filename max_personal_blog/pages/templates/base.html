@@ -6,7 +6,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Max Blog{% endblock title %}</title> 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">   
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> 
+    <link rel="icon" type="image/png" href="{% static "img/flower-icon.png" %}">  
+    {% if request.user.is_authenticated and form %}
+        <script src="{% static 'tinymce/tinymce.min.js' %}"></script>
+        {{ form.media }}
+    {% endif %}
 </head>
 <body>
     <header>

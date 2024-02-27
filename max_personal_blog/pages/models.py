@@ -2,16 +2,17 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
-
+from tinymce.models import HTMLField
 
 class Category(models.Model):
-    name = models.CharField(_("name"), max_length=100, db_index=True)
+    name = models.CharField(_("name"), max_length=100, db_index=True)    
     owner = models.ForeignKey(
         get_user_model(), 
         on_delete=models.CASCADE, 
         verbose_name=_("owner"), 
         related_name='categories',
     )
+    description = HTMLField(_("description"), max_length=10000, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -27,7 +28,7 @@ class Category(models.Model):
 
 class Page(models.Model):
     name = models.CharField(_("name"), max_length=100, db_index=True)
-    description = models.TextField(_("description"), blank=True, max_length=10000)
+    description = HTMLField(_("description"), max_length=10000, null=True, blank=True)
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE, 

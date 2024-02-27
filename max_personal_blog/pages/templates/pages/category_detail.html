@@ -7,6 +7,7 @@
         <a class="button" href="{% url "category_delete" category.pk %}">{% trans "delete"|capfirst %}</a>
     </p>
 {% endif %}
+<div class="user-content">{{ category.description|safe }}</div>
 <p>{% trans "owner" %}: <a href="{% url "user_detail" category.owner.username %}">{{ category.owner }}</a></p>
 <p>{% trans "tasks" %}: {{ category.pages.count }}</p>
 {% endblock content %}
